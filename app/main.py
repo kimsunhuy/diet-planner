@@ -7,6 +7,8 @@ import logging
 import os
 import sys
 
+app = FastAPI(title="Diet Planner API")
+
 from .models import UserInput, FullDietResponse
 from .calculator import NutritionCalculator
 from .diet_planner import DietPlanner
@@ -20,6 +22,15 @@ templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templa
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 templates = Jinja2Templates(directory=templates_dir)
 
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 로깅 설정
 logging.basicConfig(
     level=logging.DEBUG,
@@ -29,21 +40,6 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
-
-app = FastAPI(title="Diet Planner API")
-
-# 정적 파일과 템플릿 디렉토리 설정
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-# CORS 설정
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # 클래스 인스턴스 생성
 calculator = NutritionCalculator()
