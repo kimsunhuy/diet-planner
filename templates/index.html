@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식단 플래너</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>맞춤형 식단 플래너</h1>
+        
+        <form id="dietForm">
+            <div class="form-group">
+                <label for="age">나이</label>
+                <input type="number" id="age" required min="1" max="120">
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">성별</label>
+                <select id="gender" required>
+                    <option value="male">남성</option>
+                    <option value="female">여성</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="weight">체중 (kg)</label>
+                <input type="number" id="weight" required step="0.1" min="20" max="300">
+            </div>
+            
+            <div class="form-group">
+                <label for="height">신장 (cm)</label>
+                <input type="number" id="height" required step="0.1" min="100" max="250">
+            </div>
+            
+            <div class="form-group">
+                <label for="activity_level">활동량</label>
+                <select id="activity_level" required>
+                    <option value="sedentary">좌식 생활</option>
+                    <option value="light">가벼운 활동</option>
+                    <option value="moderate">보통 활동</option>
+                    <option value="active">활발한 활동</option>
+                    <option value="very_active">매우 활발한 활동</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="goal">목표</label>
+                <select id="goal" required>
+                    <option value="loss">체중 감량</option>
+                    <option value="maintain">체중 유지</option>
+                    <option value="gain">체중 증가</option>
+                </select>
+            </div>
+            
+            <button type="submit">식단 생성하기</button>
+        </form>
+        
+        <div class="results" id="results">
+            <h2>기본 정보</h2>
+            <p>기초대사량(BMR): <span id="bmr"></span> kcal</p>
+            <p>목표 칼로리: <span id="targetCalories"></span> kcal</p>
+            
+            <div class="charts">
+                <div class="chart-container">
+                    <canvas id="nutrientsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="mealDistributionChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="meal-plan" id="mealPlan">
+                <h2>추천 식단</h2>
+                <div class="meal" id="breakfast">
+                    <h3>아침</h3>
+                    <div class="meal-items"></div>
+                </div>
+                <div class="meal" id="lunch">
+                    <h3>점심</h3>
+                    <div class="meal-items"></div>
+                </div>
+                <div class="meal" id="dinner">
+                    <h3>저녁</h3>
+                    <div class="meal-items"></div>
+                </div>
+            </div>
+            
+            <div class="analysis" id="analysis">
+                <h2>영양소 분석</h2>
+                <div id="recommendations" class="recommendations"></div>
+            </div>
+            
+            <div class="export-buttons">
+                <button onclick="exportPDF()">PDF 저장(공사중)</button>
+                <button onclick="exportExcel()">Excel 저장</button>
+                <button onclick="exportImage()">이미지 저장(공사중)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
