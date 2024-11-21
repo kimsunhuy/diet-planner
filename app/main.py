@@ -13,6 +13,13 @@ from .diet_planner import DietPlanner
 from .analyzer import DietAnalyzer
 from .exporters import DietExporter
 
+# 정적 파일 디렉토리 설정
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
+
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+templates = Jinja2Templates(directory=templates_dir)
+
 # 로깅 설정
 logging.basicConfig(
     level=logging.DEBUG,
@@ -123,3 +130,18 @@ async def export_image(diet_data: FullDietResponse):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+# app/main.py
+origins = [
+    "https://diet-planner.onrender.com",  # Render에서 제공하는 도메인
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
