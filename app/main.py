@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from .gpt_service import GPTService
 import logging
 import os
 import sys
@@ -46,6 +47,7 @@ calculator = NutritionCalculator()
 diet_planner = DietPlanner()
 analyzer = DietAnalyzer()
 exporter = DietExporter()
+gpt_service = GPTService()
 
 @app.get("/")
 async def read_root(request: Request):
@@ -75,12 +77,21 @@ async def calculate_nutrition(user_input: UserInput):
         }
         logger.debug(f"Nutrition goals: {nutrition_goals}")
         
-        # 식단 생성
-        meal_plan = diet_planner.create_meal_plan(
-            target_calories=nutrition_calc["target_calories"],
-            nutrition_goals=nutrition_goals,
-            allergies=user_input.allergies
-        )
+        # GPT로 식단 추천 시도
+        gpt_meal_plan = await gpt_service.generate_diet_plan(user_input.dict())
+        
+        if gpt_meal_plan:
+            logger.debug(f"Using GPT generated meal plan")
+            meal_plan = gpt_meal_plan
+        else:
+            logger.debug(f"Falling back to default meal plan")
+            # GPT 실패 시 기존 로직 사용
+            meal_plan = diet_planner.create_meal_plan(
+                target_calories=nutrition_calc["target_calories"],
+                nutrition_goals=nutrition_goals,
+                allergies=user_input.allergies
+            )
+        
         logger.debug(f"Generated meal plan: {meal_plan}")
         
         # 식단 분석
